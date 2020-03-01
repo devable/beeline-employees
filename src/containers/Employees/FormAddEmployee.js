@@ -21,33 +21,34 @@ const SDatePicker = styled(DatePicker)`
 export const FormAddEmployee = ({ newEmployee, setNewEmployee }) => {
     const [errors, setErrors] = useState(initErrors)
 
-    const handleChangeFirstName = ({ target }) => {
-        if (isValidCyrLetters.try(target.value)) {
-            setNewEmployee({ ...newEmployee, firstname: target.value })
-            setErrors(initErrors)
-        } else {
-            setErrors({ ...initErrors, firstname: isValidCyrLetters.errorMessage })
-        }
+    const actions = {
+        handleChangeFirstName: ({ target }) => {
+            if (isValidCyrLetters.try(target.value)) {
+                setNewEmployee({ ...newEmployee, firstname: target.value })
+                setErrors(initErrors)
+            } else {
+                setErrors({ ...initErrors, firstname: isValidCyrLetters.errorMessage })
+            }
+        },
+        handleChangeLastName: ({ target }) => {
+            if (isValidCyrLetters.try(target.value)) {
+                setNewEmployee({ ...newEmployee, lastname: target.value })
+                setErrors(initErrors)
+            } else {
+                setErrors({ ...initErrors, lastname: isValidCyrLetters.errorMessage })
+            }
+        },
+        handleChangePhone: ({ target }) => {
+            if (isValidNumber.try(target.value)) {
+                setNewEmployee({ ...newEmployee, phone: phoneFormat.formatE164(phoneFormat.countryForE164Number(target.value), target.value) })
+                setErrors(initErrors)
+            } else {
+                setErrors({ ...initErrors, phone: isValidNumber.errorMessage })
+            }
+        },
+        handleChangeDateStart: date => setNewEmployee({ ...newEmployee, dateStart: date }),
+        handleChangeDateEnd: date => setNewEmployee({ ...newEmployee, dateEnd: date })
     }
-    const handleChangeLastName = ({ target }) => {
-        if (isValidCyrLetters.try(target.value)) {
-            setNewEmployee({ ...newEmployee, lastname: target.value })
-            setErrors(initErrors)
-        } else {
-            setErrors({ ...initErrors, lastname: isValidCyrLetters.errorMessage })
-        }
-    }
-    const handleChangePhone = ({ target }) => {
-        if (isValidNumber.try(target.value)) {
-            setNewEmployee({ ...newEmployee, phone: phoneFormat.formatE164(phoneFormat.countryForE164Number(target.value), target.value) })
-            setErrors(initErrors)
-        } else {
-            setErrors({ ...initErrors, phone: isValidNumber.errorMessage })
-        }
-    }
-
-    const handleChangeDateStart = date => setNewEmployee({ ...newEmployee, dateStart: date })
-    const handleChangeDateEnd = date => setNewEmployee({ ...newEmployee, dateEnd: date })
 
     const disabledDateOfStart = current => {
         if (newEmployee.dateEnd) {
@@ -64,12 +65,12 @@ export const FormAddEmployee = ({ newEmployee, setNewEmployee }) => {
         <div>
             <SInputGroup>
                 <Row gutter={20}>
-                    <Col span={12}><Input placeholder='First name' value={newEmployee.firstname} onChange={handleChangeFirstName} /></Col>
-                    <Col span={12}><Input placeholder='Last name' value={newEmployee.lastname} onChange={handleChangeLastName} /></Col>
+                    <Col span={12}><Input placeholder='First name' value={newEmployee.firstname} onChange={actions.handleChangeFirstName} /></Col>
+                    <Col span={12}><Input placeholder='Last name' value={newEmployee.lastname} onChange={actions.handleChangeLastName} /></Col>
                 </Row>
             </SInputGroup>
             <SInputGroup>
-                <Input options={{ phone: true }} placeholder='Phone number' value={newEmployee.phone} onChange={handleChangePhone} />
+                <Input options={{ phone: true }} placeholder='Phone number' value={newEmployee.phone} onChange={actions.handleChangePhone} />
             </SInputGroup>
             <SInputGroup>
                 <Row gutter={20}>
@@ -77,7 +78,7 @@ export const FormAddEmployee = ({ newEmployee, setNewEmployee }) => {
                         <SDatePicker
                             placeholder='Start date'
                             value={newEmployee.dateStart}
-                            onChange={handleChangeDateStart}
+                            onChange={actions.handleChangeDateStart}
                             format={dateFormat}
                             disabledDate={disabledDateOfStart}
                         />
@@ -86,14 +87,13 @@ export const FormAddEmployee = ({ newEmployee, setNewEmployee }) => {
                         <SDatePicker
                             placeholder='End date'
                             value={newEmployee.dateEnd}
-                            onChange={handleChangeDateEnd}
+                            onChange={actions.handleChangeDateEnd}
                             format={dateFormat}
                             disabledDate={disabledDateOfEnd}
                         />
                     </Col>
                 </Row>
             </SInputGroup>
-            {(console.log(errors))}
             {errors.firstname || errors.lastname || errors.phone ? (
                 <div style={{ marginTop: 20 }}>
                     {errors.firstname ? <Alert message={errors.firstname} type="error" /> : ''}
